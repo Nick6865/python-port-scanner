@@ -2,7 +2,6 @@ import socket
 import pyfiglet
 import concurrent.futures
 import argparse #now i can use it in terminal no need to run file any more
-#new:
 import time
 
             #CONTROL PANEL
@@ -50,7 +49,12 @@ def scan_port(port):
     result = s.connect_ex((target_ip, port))
      
     if result == 0: #connect success
-        print(f"Connect success!! Port {port} is open")
+        try:
+            service_name = socket.getservbyport(port)
+        except OSError:
+            service_name = "Unknown" #if the port is too weird
+        
+        print(f"Connect success!! Port {port} ({service_name}) is open")
         try:
             s.send(b"WhoAreYou\r\n") # \r moves the cursor back to the start
             message = s.recv(1024) #1024 characters
@@ -68,7 +72,7 @@ def scan_port(port):
 print("-" * 50 + "\n")
 print(f"Scanning {target_ip}...\n")
 print(f"Scanning from port {start_port} to port {end_port}")
-print(f"{args.workers} are working")
+print(f"{args.workers} are working\n")
 print("-" * 50 + "\n")
 
 #add a timer
