@@ -1,9 +1,9 @@
 import socket
 import pyfiglet
 import concurrent.futures
-#new:
 import argparse #now i can use it in terminal no need to run file any more
-#can i use from multiprocessing import Pool? (saw it on stack overflow)
+#new:
+import time
 
             #CONTROL PANEL
 parser = argparse.ArgumentParser(description="Python Port Scanner V3 by Nick")
@@ -54,6 +54,9 @@ def scan_port(port):
         try:
             s.send(b"WhoAreYou\r\n") # \r moves the cursor back to the start
             message = s.recv(1024) #1024 characters
+            print("Sending a message to server...\n")
+            print(f"Port {port}'s respond: {message.decode('utf-8').strip()}\n")
+            #converts byte string (message) to a Unicode string using UTF8 encoding and removes leading whitespace
         except:
             pass
     
@@ -68,8 +71,13 @@ print(f"Scanning from port {start_port} to port {end_port}")
 print(f"{args.workers} are working")
 print("-" * 50 + "\n")
 
+#add a timer
+start_time = time.time()
+
 #executor will hire 100 workers to work and use map to guide them
 with concurrent.futures.ThreadPoolExecutor(max_workers = args.workers) as executor:
     executor.map(scan_port, ports_to_scan)
     
-print("Scan completed!!")
+end_time   = time.time()
+    
+print(f"Scan completed in {end_time - start_time:.2f} seconds!!")
